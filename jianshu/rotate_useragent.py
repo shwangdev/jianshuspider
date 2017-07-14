@@ -1,11 +1,6 @@
 # -*-coding:utf-8-*-
 
-from logging import log
-
-"""避免被ban策略之一：使用useragent池。
-
-使用注意：需在settings.py中进行相应的设置。
-"""
+import  logging
 
 import random
 from scrapy.downloadermiddlewares.useragent import UserAgentMiddleware
@@ -54,14 +49,12 @@ class RotateUserAgentMiddleware(UserAgentMiddleware):
             "(KHTML, like Gecko) Chrome/19.0.1055.1 Safari/535.24"
         ]
 
-        def process_request(self, request, spider):
-            ua = random.choice(self.user_agent_list)
-            if ua:
-                #显示当前使用的useragent
-                print "********Current UserAgent:%s************" %ua
+    def process_request(self, request, spider):
+        ua = random.choice(self.user_agent_list)
+        if ua:
+            logging.debug("********Current UserAgent: {} ************".format(ua))
 
-                #记录
-                log.msg('Current UserAgent: '+ua, level='INFO')
-                request.headers.setdefault('User-Agent', ua)
-                #the default user_agent_list composes chrome,I E,firefox,Mozilla,opera,netscape
-                #for more user agent strings,you can find it in http://www.useragentstring.com/pages/useragentstring.php
+            logging.debug('Current UserAgent: {}'.format(ua))
+            request.headers.setdefault('User-Agent', ua)
+            #the default user_agent_list composes chrome,I E,firefox,Mozilla,opera,netscape
+            #for more user agent strings,you can find it in http://www.useragentstring.com/pages/useragentstring.php
