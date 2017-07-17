@@ -66,8 +66,10 @@ class JanshuSpider(Spider):
                 article_item = JianShuArticleItem()
                 title = ar.find('.//*[@class="title"]')
                 url = urlparse.urljoin(self.domain_url, title.get('href'))
+                author = ar.find('.//*[@class="name"]').text_content().strip()
                 article_item['link'] = url
                 article_item['title'] = title.text
+                article_item['author'] = author
                 meta = re.findall(r'\d+', ar.find('.//*[@class="meta"]').text_content())
                 if len(meta) == 3:
                     article_item['views_count'], article_item['comments_count'], article_item['likes_count'] = meta
