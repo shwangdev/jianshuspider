@@ -27,7 +27,7 @@ ROBOTSTXT_OBEY = True
 # Configure a delay for requests for the same website (default: 0)
 # See http://scrapy.readthedocs.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-DOWNLOAD_DELAY = 3
+#DOWNLOAD_DELAY = 3
 # The download delay setting will honor only one of:
 #CONCURRENT_REQUESTS_PER_DOMAIN = 16
 #CONCURRENT_REQUESTS_PER_IP = 16
@@ -52,10 +52,19 @@ DEFAULT_REQUEST_HEADERS = {
 
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
+RETRY_TIMES = 10
+RETRY_HTTP_CODES = [500, 503, 504, 400, 403, 404, 408]
+
 DOWNLOADER_MIDDLEWARES = {
     'jianshu.middlewares.MyCustomDownloaderMiddleware': None,
+    'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
     'jianshu.rotate_useragent.RotateUserAgentMiddleware': 403,
+    'scrapy_proxies.RandomProxy': 100,
+    'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': 404
 }
+
+PROXY_LIST = '/home/shwang/workspace/spider/jianshu/proxy.txt'
+PROXY_MODE = 1
 
 # Enable or disable extensions
 # See http://scrapy.readthedocs.org/en/latest/topics/extensions.html
@@ -66,7 +75,7 @@ DOWNLOADER_MIDDLEWARES = {
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    #'jianshu.pipelines.JianshuPipeline': 300,
+    'jianshu.pipelines.JsonFileJianshuPipeline': 300,
     'scrapyelasticsearch.scrapyelasticsearch.ElasticSearchPipeline': 500
 }
 

@@ -15,7 +15,7 @@ class JanshuSpider(Spider):
     allowed_domains = ["www.jianshu.com"]
     domain_url = 'http://www.jianshu.com'
     start_urls = [
-        "http://www.jianshu.com/recommendations/collections?page={}&order_by=hot".format(x) for x in range(1, 40)
+        "http://www.jianshu.com/recommendations/collections?page={}&order_by=hot".format(x) for x in range(1, 2)
     ]
 
     # def parse(self, response):
@@ -42,7 +42,6 @@ class JanshuSpider(Spider):
                         link  = '{}/{}'.format(self.domain_url, count_field[0].get('href'))
                         item['link'] = link
                         content = count_field.text_content()
-                        print content
                         ac, sc = re.findall(r"[\d.]+K?", content)
                         item['article_count'] = int(ac)
                         if 'K' in sc:
@@ -51,8 +50,8 @@ class JanshuSpider(Spider):
                         else:
                             n = int(sc)
                     yield item
-                    for i in range(1, 200):
-                        yield Request(urlparse.urljoin(link, '?order_by=top&pages={}'.format(i)), meta={'feature': feature_name}, callback=self.parse_features)
+                    for i in range(1, 2):
+                        yield Request(urlparse.urljoin(link, '?order_by=top&pages={}'.format(i)), dont_filter=True, meta={'feature': feature_name}, callback=self.parse_features)
 
     def parse_features(self, response):
         #parse jianshu features
@@ -78,8 +77,7 @@ class JanshuSpider(Spider):
                     article_item['views_count'], article_item['comments_count'], article_item['likes_count'], article_item['rewards_count'] = meta
                 else:
                     logging.error('Invalid meta information')
-                logging.debug('tring to parse article url: {}'.format(url))
-                yield Request(url=url, method='GET', meta={'item': article_item}, callback=self.parse_articles)
+                yield Request(url=url, method='GET', dont_filter=True, meta={'item': article_item}, callback=self.parse_articles)
 
     def parse_articles(self, response):
         logging.debug('parsing article url: {}'.format(response.url))
